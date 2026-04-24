@@ -8,84 +8,128 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            background: #fff5f6; 
+            background: linear-gradient(135deg, #fff5f6 0%, #ffdde1 100%); 
             font-family: 'Quicksand', sans-serif;
             display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
+            height: 100vh; overflow: hidden; position: relative;
         }
 
-        /* MÀN HÌNH HỘP QUÀ */
+        /* Hiệu ứng hạt lấp lánh nhẹ nền */
+        #canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+        /* 1. MÀN HÌNH HỘP QUÀ */
         #gift-screen {
             position: fixed; inset: 0; display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 100;
-            background: #ffdde1;
+            background: #ffdde1; transition: 1s ease;
         }
         .gift-box {
-            width: 120px; height: 120px; background: #d81b60;
-            position: relative; cursor: pointer; border-radius: 12px;
-            animation: bounce 1.5s infinite;
+            width: 140px; height: 140px; background: #d81b60;
+            position: relative; cursor: pointer; border-radius: 15px;
+            animation: bounce 1.5s infinite; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        .gift-box::before { content: ''; position: absolute; width: 25px; height: 100%; background: #ffd700; left: 50%; transform: translateX(-50%); }
-        .gift-box::after { content: ''; position: absolute; height: 25px; width: 100%; background: #ffd700; top: 50%; transform: translateY(-50%); }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .gift-box::before { content: ''; position: absolute; width: 30px; height: 100%; background: #ffd700; left: 50%; transform: translateX(-50%); }
+        .gift-box::after { content: ''; position: absolute; height: 30px; width: 100%; background: #ffd700; top: 50%; transform: translateY(-50%); }
+        .lid { position: absolute; top: -8px; left: -5px; width: 150px; height: 35px; background: #ad1457; border-radius: 5px; z-index: 2; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
+        #gift-screen p { margin-top: 25px; color: #d81b60; font-size: 22px; text-align: center; font-family: 'Dancing Script', cursive; }
 
-        /* MÀN HÌNH ALBUM - CHỈNH CHUẨN CHO IPHONE */
-        #photo-screen { 
-            display: none; width: 100%; text-align: center; 
-            padding: 10px; animation: fadeIn 1s;
+        /* 2. MÀN HÌNH LỜI CHÚC */
+        #wish-screen {
+            position: fixed; inset: 0; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; text-align: center; background: rgba(255,255,255,0.95);
+            z-index: 90; transition: 1s;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .wish-container {
+            width: 100%; max-width: 360px; padding: 30px 20px; 
+            border: 2px dashed #ffb6c1; border-radius: 20px; background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .wish-text { 
+            font-family: 'Dancing Script', cursive; font-size: 23px; 
+            line-height: 1.6; color: #ad1457; min-height: 180px; 
+            text-align: center; white-space: pre-line;
+        }
+        .btn-open {
+            margin-top: 25px; padding: 12px 35px; font-family: 'Quicksand', sans-serif;
+            font-weight: bold; font-size: 16px; border: none; background: #ff69b4; color: white;
+            border-radius: 30px; cursor: pointer; display: none;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
 
+        /* 3. MÀN HÌNH ALBUM ẢNH */
+        #photo-screen { display: none; opacity: 0; transition: 2s; text-align: center; width: 100%; z-index: 80; }
+        
+        /* PHẦN SỬA LỖI MẤT ĐẦU Ở ĐÂY */
         .memory-sphere {
             position: relative; 
-            width: 85vw; /* Thu nhỏ theo chiều rộng màn hình iPhone */
-            height: 85vw; 
-            max-width: 300px; max-height: 300px;
+            width: 320px; height: 320px;
             border-radius: 50%; overflow: hidden;
-            box-shadow: 0 0 30px rgba(255, 182, 193, 0.5);
-            border: 5px solid #fff; margin: 0 auto 20px;
-            background: #fff;
+            box-shadow: 0 0 50px rgba(255, 182, 193, 0.8);
+            border: 8px solid #fff; margin: 0 auto 25px;
+            animation: sphereFloat 6s infinite ease-in-out;
+            cursor: pointer;
         }
+        @keyframes sphereFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         
         .slide-item {
-            position: absolute; inset: 0; 
-            /* DÙNG CONTAIN VÀ CENTER 10% ĐỂ THẤY TRỌN ĐẦU TRÊN IPHONE */
-            background-size: contain; 
-            background-repeat: no-repeat;
-            background-position: center 10%; 
-            opacity: 0; transition: 0.8s ease-in-out;
+            position: absolute; inset: 0; background-size: cover;
+            /* Căn chỉnh lại để không bị mất đầu: center cho chiều rộng, và 15% từ trên xuống (Tránh đầu dì và chú rể) */
+            background-position: center 15%; 
+            transition: 1.5s ease-in-out; opacity: 0; transform: scale(1.2);
         }
-        .slide-item.active { opacity: 1; }
+        .slide-item.active { opacity: 1; transform: scale(1); }
         
-        .button-controls { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+        .button-controls { display: flex; justify-content: center; gap: 25px; margin-top: 10px; }
         .button-controls button {
-            width: 50px; height: 50px; border-radius: 50%; border: none;
-            background: #ff69b4; color: #fff; font-size: 20px;
+            width: 55px; height: 55px; border-radius: 50%; border: none;
+            background: #ff69b4; color: #fff; font-size: 24px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex; justify-content: center; align-items: center;
         }
-        .button-controls button:first-child { border: 2px solid #3b82f6; } /* Nút trái viền xanh */
+        .button-controls button:first-child { border: 2px solid #3b82f6; background: #ff69b4; } /* Viền xanh chuẩn như ảnh An gửi */
         
-        .title-final { 
-            font-family: 'Dancing Script', cursive; 
-            font-size: 24px; color: #d81b60; margin-top: 20px; 
+        .title-final { font-family: 'Dancing Script', cursive; font-size: 30px; color: #d81b60; margin-top: 20px; }
+
+        /* Hiệu ứng trái tim bay lên */
+        .heart-particle {
+            position: fixed; pointer-events: none;
+            animation: flyUp 3s forwards; z-index: 1000;
+        }
+        @keyframes flyUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(0); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <audio id="bgMusic" src="nhac-cuoi.mp3" loop></audio>
+    <canvas id="canvas"></canvas>
+    
+    <audio id="bgMusic" src="nhac-cuoi.mp3" loop preload="auto"></audio>
 
-    <div id="gift-screen" onclick="startEverything()">
-        <div class="gift-box"></div>
-        <p style="margin-top:20px; color:#d81b60; font-family:'Dancing Script'">Chạm để mở quà dì nhé! ✨</p>
+    <div id="gift-screen">
+        <div class="gift-box" onclick="startEverything()">
+            <div class="lid"></div>
+        </div>
+        <p>Gõ nhẹ vào hộp quà dì nhé! ✨🎁</p>
+    </div>
+
+    <div id="wish-screen">
+        <div class="wish-container">
+            <div class="wish-text" id="wishText"></div>
+            <button class="btn-open" id="btnContinue" onclick="showPhotos()">Bấm để xem kỷ niệm 📸✨</button>
+        </div>
     </div>
 
     <div id="photo-screen">
-        <div class="memory-sphere">
-            <div class="slide-item active" style="background-image: url('1.jpeg');"></div>
-            <div class="slide-item" style="background-image: url('2.jpeg');"></div>
+        <div class="memory-sphere" id="photoSphere" onclick="spawnHeart(event)">
+            <div class="slide-item active" style="background-image: url('1.jpg');"></div>
+            <div class="slide-item" style="background-image: url('2.jpg');"></div>
             <div class="slide-item" style="background-image: url('3.jpeg');"></div>
             <div class="slide-item" style="background-image: url('4.jpeg');"></div>
-            <div class="slide-item" style="background-image: url('5.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('5.jpg');"></div>
             <div class="slide-item" style="background-image: url('6.jpeg');"></div>
             <div class="slide-item" style="background-image: url('7.jpeg');"></div>
             <div class="slide-item" style="background-image: url('8.jpeg');"></div>
@@ -101,10 +145,46 @@
     </div>
 
     <script>
+        const bgMusic = document.getElementById('bgMusic');
+        const giftScreen = document.getElementById('gift-screen');
+        const wishScreen = document.getElementById('wish-screen');
+        const photoScreen = document.getElementById('photo-screen');
+        const wishTextDiv = document.getElementById('wishText');
+        const btnContinue = document.getElementById('btnContinue');
+
+        // Lời chúc tiếng Việt có dấu
+        const message = "Dì Ngọc Anh thương yêu! 🌸\n\nNgày hạnh phúc nhất đã đến rồi. Cháu chúc dì luôn ngập tràn tiếng cười và được chú yêu thương thật nhiều nhé! 💍✨\n\nMón quà này cháu tự tay làm, gói gọn những kỷ niệm rạng rỡ của dì...\n\nYêu dì của cháu nhiều lắm! ❤️";
+
         function startEverything() {
-            document.getElementById('bgMusic').play();
-            document.getElementById('gift-screen').style.display = 'none';
-            document.getElementById('photo-screen').style.display = 'block';
+            // Nhạc sẽ phát ngay khi chạm vào hộp quà (Bắt buộc cho mobile)
+            bgMusic.play().catch(e => console.log("Cần chạm để phát nhạc"));
+            
+            giftScreen.style.opacity = '0';
+            setTimeout(() => {
+                giftScreen.style.display = 'none';
+                wishScreen.style.display = 'flex';
+                typeWriter(message, 0);
+            }, 800);
+        }
+
+        function typeWriter(text, i) {
+            if (i < text.length) {
+                wishTextDiv.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                setTimeout(() => typeWriter(text, i + 1), 50);
+            } else {
+                btnContinue.style.display = 'inline-block';
+            }
+        }
+
+        function showPhotos() {
+            // Ép nhạc phát nếu lần đầu bị chặn
+            bgMusic.play();
+            wishScreen.style.opacity = '0';
+            setTimeout(() => {
+                wishScreen.style.display = 'none';
+                photoScreen.style.display = 'block';
+                setTimeout(() => photoScreen.style.opacity = '1', 100);
+            }, 600);
         }
 
         const slides = document.querySelectorAll('.slide-item');
@@ -115,7 +195,56 @@
             else currentIndex = (currentIndex - 1 + slides.length) % slides.length;
             slides[currentIndex].classList.add('active');
         }
-        setInterval(() => { if(document.getElementById('photo-screen').style.display === 'block') updateSlides('next'); }, 4000);
+
+        // Tự động chuyển ảnh mỗi 4 giây
+        setInterval(() => { if (photoScreen.style.display === 'block') updateSlides('next'); }, 4000);
+
+        function spawnHeart(e) {
+            const heart = document.createElement('div');
+            heart.className = 'heart-particle';
+            heart.innerHTML = '❤️';
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 2500);
+        }
+
+        // Hiệu ứng hạt nền
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.01;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 182, 193, 0.6)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (particles.length < 30) particles.push(new Particle());
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(); particles[i].draw();
+                if (particles[i].size <= 0.2) { particles.splice(i, 1); i--; }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 </html>
