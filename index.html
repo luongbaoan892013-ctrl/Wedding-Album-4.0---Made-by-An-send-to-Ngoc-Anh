@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gửi Dì Ngọc Anh ✨💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            background: linear-gradient(135deg, #fff5f6 0%, #ffdde1 100%); 
+            font-family: 'Quicksand', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+        }
+        #gift-screen { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; background: #ffdde1; transition: 1s ease; }
+        .gift-box { width: 140px; height: 140px; background: #d81b60; position: relative; cursor: pointer; border-radius: 15px; animation: bounce 1.5s infinite; }
+        .gift-box::before { content: ''; position: absolute; width: 30px; height: 100%; background: #ffd700; left: 50%; transform: translateX(-50%); }
+        .gift-box::after { content: ''; position: absolute; height: 30px; width: 100%; background: #ffd700; top: 50%; transform: translateY(-50%); }
+        .lid { position: absolute; top: -8px; left: -5px; width: 150px; height: 35px; background: #ad1457; border-radius: 5px; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        #gift-screen p { margin-top: 25px; color: #d81b60; font-size: 22px; text-align: center; font-family: 'Dancing Script', cursive; }
+        
+        #wish-screen { position: fixed; inset: 0; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; background: rgba(255,255,255,0.95); z-index: 90; }
+        .wish-container { width: 100%; max-width: 360px; padding: 30px 20px; border: 2px dashed #ffb6c1; border-radius: 20px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .wish-text { font-family: 'Dancing Script', cursive; font-size: 23px; line-height: 1.6; color: #ad1457; min-height: 180px; text-align: center; white-space: pre-line; }
+        .btn-open { margin-top: 25px; padding: 12px 35px; font-family: 'Quicksand', sans-serif; font-weight: bold; font-size: 16px; border: none; background: #ff69b4; color: white; border-radius: 30px; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(255,105,180,0.4); }
+        
+        #photo-screen { display: none; opacity: 0; transition: 2s; text-align: center; width: 100%; z-index: 80; }
+        .memory-sphere { position: relative; width: 300px; height: 300px; border-radius: 50%; overflow: hidden; box-shadow: 0 0 50px rgba(255, 182, 193, 0.8); border: 8px solid #fff; margin: 0 auto 25px; }
+        .slide-item { position: absolute; inset: 0; background-size: cover; background-position: center; transition: 1.5s; opacity: 0; }
+        .slide-item.active { opacity: 1; }
+        .button-controls button { width: 50px; height: 50px; border-radius: 50%; border: none; background: #ff69b4; color: #fff; font-size: 20px; cursor: pointer; margin: 0 10px; }
+        .title-final { font-family: 'Dancing Script', cursive; font-size: 28px; color: #d81b60; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <audio id="bgMusic" src="nhac-cuoi.mp3" loop preload="auto"></audio>
+
+    <div id="gift-screen">
+        <div class="gift-box" onclick="startEverything()">
+            <div class="lid"></div>
+        </div>
+        <p>Gõ nhẹ vào hộp quà dì nhé! ✨🎁</p>
+    </div>
+
+    <div id="wish-screen">
+        <div class="wish-container">
+            <div class="wish-text" id="wishText"></div>
+            <button class="btn-open" id="btnContinue" onclick="showPhotos()">Bấm để xem kỷ niệm 📸✨</button>
+        </div>
+    </div>
+
+    <div id="photo-screen">
+        <div class="memory-sphere">
+            <div class="slide-item active" style="background-image: url('1.jpg');"></div>
+            <div class="slide-item" style="background-image: url('2.jpg');"></div>
+            <div class="slide-item" style="background-image: url('3.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('4.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('5.jpg');"></div>
+            <div class="slide-item" style="background-image: url('6.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('7.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('8.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('9.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('10.jpeg');"></div>
+            <div class="slide-item" style="background-image: url('11.jpeg');"></div>
+        </div>
+        <div class="button-controls">
+            <button onclick="updateSlides('prev')">❮</button>
+            <button onclick="updateSlides('next')">❯</button>
+        </div>
+        <div class="title-final">Mãi Hạnh Phúc Dì Nhé! ❤️</div>
+    </div>
+
+    <script>
+        const bgMusic = document.getElementById('bgMusic');
+        const message = "Dì Ngọc Anh thương yêu! 🌸\n\nNgày hạnh phúc nhất đã đến rồi. Cháu chúc dì luôn ngập tràn tiếng cười và được chú yêu thương thật nhiều nhé! 💍✨\n\nMón quà này cháu tự tay làm, gói gọn những kỷ niệm rạng rỡ của dì...\n\nYêu dì của cháu nhiều lắm! ❤️";
+
+        function startEverything() {
+            // Nhạc sẽ phát ngay khi dì chạm vào hộp quà
+            bgMusic.play().catch(e => console.log("Cần chạm để phát nhạc"));
+            document.getElementById('gift-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('gift-screen').style.display = 'none';
+                document.getElementById('wish-screen').style.display = 'flex';
+                typeWriter(message, 0);
+            }, 500);
+        }
+
+        function typeWriter(text, i) {
+            if (i < text.length) {
+                document.getElementById('wishText').innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                setTimeout(() => typeWriter(text, i + 1), 50);
+            } else { 
+                document.getElementById('btnContinue').style.display = 'inline-block'; 
+            }
+        }
+
+        function showPhotos() {
+            document.getElementById('wish-screen').style.display = 'none';
+            document.getElementById('photo-screen').style.display = 'block';
+            setTimeout(() => document.getElementById('photo-screen').style.opacity = '1', 100);
+        }
+
+        const slides = document.querySelectorAll('.slide-item');
+        let currentIndex = 0;
+        function updateSlides(direction) {
+            slides[currentIndex].classList.remove('active');
+            if (direction === 'next') currentIndex = (currentIndex + 1) % slides.length;
+            else currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            slides[currentIndex].classList.add('active');
+        }
+        // Tự động chuyển ảnh sau 4 giây
+        setInterval(() => { if (document.getElementById('photo-screen').style.display === 'block') updateSlides('next'); }, 4000);
+    </script>
+</body>
+</html>
